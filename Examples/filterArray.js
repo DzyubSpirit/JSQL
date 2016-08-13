@@ -68,5 +68,7 @@ console.dir(res);
 
 module.exports = {
   data,
+  metadata,
+  buildGetter,
   Person
 }
