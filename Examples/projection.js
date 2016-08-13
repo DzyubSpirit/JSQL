@@ -1,14 +1,6 @@
 let { data, Person } = require('./filterArray'),
     S = require('./setFuncs');
 
-let PersonProperties = 
-      Object.getOwnPropertyNames(Person.prototype)
-            .reduce((obj, propName) => {
-              obj[propName] = 
-                Object.getOwnPropertyDescriptor(Person.prototype, propName); 
-              return obj
-            }, {});
-
 let dataPrototypeSym = Symbol('dataProtortype'),
     projFieldsSym = Symbol('projFields');
 
@@ -34,14 +26,11 @@ Query.prototype.projection = function(fields, excluding=false) {
 }
 
 Query.prototype.project = function() {
-  let res = this.data.map(elem => {
-    let res = Object.keys(elem).reduce((obj, propName) => {
-      obj[propName] = elem[propName];
-      return obj;
-    }, Object.create(Person.prototype, PersonProperties));
+  return this.data.map(elem => {
+    let res = Array.prototype.slice.call(elem);
+    res.__proto__ = Person.prototype;
     return res;
   });
-  return res;
 }
 
 function testProjectionWithFunc(func, ...args) {
@@ -54,7 +43,7 @@ function testProjection(...args) {
 }
 
 function testProjectionAge(...args) {
-  testProjectionWithFunc(x => console.log(x[0].birth), ...args);
+  testProjectionWithFunc(x => console.log(x[0].age), ...args);
 }
 
 testProjection(['name', 'city']);
